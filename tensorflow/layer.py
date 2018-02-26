@@ -69,7 +69,6 @@ def multi_dim_legendre_list(n, var):
 		one_dim_polys.append(legendre_list(n, x))
 	dim_combinations = enumerate_dim(n, len(var))
 	for comb in dim_combinations:
-		print(comb)
 		apoly = 1.
 		for i in range(len(comb)):
 			apoly = tf.multiply(apoly, one_dim_polys[i][comb[i]])
