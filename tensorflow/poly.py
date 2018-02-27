@@ -80,7 +80,6 @@ def multi_dim_poly_list(n, var, poly):
 		one_dim_polys.append(poly(n, x))
 	for i in range(n+1):
 		dim_combinations = enumerate_dim(i, len(var))
-		print(dim_combinations)
 		for comb in dim_combinations:
 			apoly = 1.
 			for i in range(len(comb)):

@@ -1,5 +1,6 @@
 import torch
 from ..utils.multi_dim import enumerate_dim
+from .poly import *
 
 
 def legendre_list(n, x):
@@ -14,16 +15,9 @@ def legendre_list(n, x):
 	output:
 		y: a list of function values
 	"""
-	assert n >= 0, "Order should >= 0."
-	assert isinstance(x, torch.autograd.Variable) or isinstance(x, torch.Tensor), "x should be a instance of torch.autograd.Variable or torch.Tensor."
-	if n == 0:
-		return [torch.ones_like(x)]
-	elif n == 1:
-		return [torch.ones_like(x), x]
-	polys = [torch.ones_like(x), x]
-	for i in range(1, n):
-		polys.append(((2*i+1)*x*polys[-1]-i*polys[-2])/(i+1))
-	return polys
+	initial = [lambda x: torch.ones_like(x), lambda x: x]
+	recurrence = lambda p1, p2, n, x: ((2*n+1)*x*p1-n*p2)/(n+1)
+	return poly_list(n, x, initial, recurrence)
 
 
 def legendre_tensor(n, x):
@@ -38,16 +32,9 @@ def legendre_tensor(n, x):
 	output:
 		y: a tensor of function values
 	"""
-	assert n >= 0, "Order should >= 0."
-	assert isinstance(x, torch.autograd.Variable) or isinstance(x, torch.Tensor), "x should be a instance of torch.autograd.Variable or torch.Tensor."	
-	if n == 0:
-		return torch.ones_like(x)
-	elif n == 1:
-		return torch.cat([torch.ones_like(x), x], dim = 1)
-	polys = [torch.ones_like(x), x]
-	for i in range(1, n):
-		polys.append(((2*i+1)*x*polys[-1]-i*polys[-2])/(i+1))
-	return torch.cat(polys, dim = 1)
+	initial = [lambda x: torch.ones_like(x), lambda x: x]
+	recurrence = lambda p1, p2, n, x: ((2*n+1)*x*p1-n*p2)/(n+1)
+	return poly_tensor(n, x, initial, recurrence)
 
 
 def multi_dim_legendre_list(n, var):
@@ -64,16 +51,7 @@ def multi_dim_legendre_list(n, var):
 	>>> multi_dim_legendre_list(3, [x, y])
 	>>> [p3(x)p0(y), p2(x)p1(y), p1(x)p2(y), p0(x)p3(y)] # Each pi(x) is a legendre polynomail of order i, (a tensor)
 	"""
-	one_dim_polys, polys = [], []
-	for x in var:
-		one_dim_polys.append(legendre_list(n, x))
-	dim_combinations = enumerate_dim(n, len(var))
-	for comb in dim_combinations:
-		apoly = 1.
-		for i in range(len(comb)):
-			apoly = apoly*one_dim_polys[i][comb[i]]
-		polys.append(apoly)
-	return polys
+	return multi_dim_poly_list(n, var, legendre_list)
 
 
 def multi_dim_legendre_tensor(n, var):
@@ -90,13 +68,4 @@ def multi_dim_legendre_tensor(n, var):
 	>>> multi_dim_legendre_list(3, [x, y])
 	>>> Tensor([p3(x)p0(y), p2(x)p1(y), p1(x)p2(y), p0(x)p3(y)]) # Each pi(x) is a legendre polynomail of order i, (a tensor)
 	"""
-	one_dim_polys, polys = [], []
-	for x in var:
-		one_dim_polys.append(legendre_list(n, x))
-	dim_combinations = enumerate_dim(n, len(var))
-	for comb in dim_combinations:
-		apoly = 1.
-		for i in range(len(comb)):
-			apoly = apoly*one_dim_polys[i][comb[i]]
-		polys.append(apoly)
-	return torch.cat(polys, dim = 1)
+	return multi_dim_poly_tensor(n, var, legendre_list)
