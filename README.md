@@ -4,3 +4,4 @@ TensorFlow and PyTorch layers for generating multi-dimensional Orthogonal Polyno
 ---
 ## Orthogonal polynomials supported:
 - [Legendre polynomial](https://en.wikipedia.org/wiki/Legendre_polynomials)
+- [Laguerre polynomial](https://en.wikipedia.org/wiki/Laguerre_polynomials)
