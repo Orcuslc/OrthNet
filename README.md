@@ -8,3 +8,6 @@ TensorFlow and PyTorch layers for generating multi-dimensional Orthogonal Polyno
 - [Hermite polynomial](https://en.wikipedia.org/wiki/Hermite_polynomials)
   - hermite: He(x) in Wiki, the poly in probability theory
   - hermite2: H(x) in Wiki, the poly in physics
+- [Chebyshev polynomial](https://en.wikipedia.org/wiki/Chebyshev_polynomials)
+  - chebyshev: T(x) in Wiki, of the first kind
+  - chebyshev2: U(x) in Wiki, of the second kind
