@@ -1,6 +1,6 @@
 import sys
-sys.path.append('../../')
-from OrthNet.pytorch import laguerre_tensor, multi_dim_laguerre_tensor
+sys.path.append('../')
+from orthnet.pytorch import laguerre_tensor, multi_dim_laguerre_tensor
 import torch
 from torch.autograd import Variable
 import numpy as np

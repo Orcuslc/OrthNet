@@ -1,6 +1,6 @@
 import sys
-sys.path.append('../../')
-from OrthNet.pytorch import legendre_tensor, multi_dim_legendre_tensor
+sys.path.append('../')
+from orthnet.pytorch import legendre_tensor, multi_dim_legendre_tensor
 import torch
 from torch.autograd import Variable
 import numpy as np

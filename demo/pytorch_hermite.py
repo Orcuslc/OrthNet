@@ -1,6 +1,6 @@
 import sys
-sys.path.append('../../')
-from OrthNet.pytorch import hermite_tensor, multi_dim_hermite_tensor
+sys.path.append('../')
+from orthnet.pytorch import hermite_tensor, multi_dim_hermite_tensor
 import torch
 from torch.autograd import Variable
 import numpy as np

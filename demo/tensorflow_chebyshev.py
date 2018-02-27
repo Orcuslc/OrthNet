@@ -1,6 +1,6 @@
 import sys
-sys.path.append('../../')
-from OrthNet.tensorflow import chebyshev_tensor, multi_dim_chebyshev_tensor
+sys.path.append('../')
+from orthnet.tensorflow import chebyshev_tensor, multi_dim_chebyshev_tensor
 import tensorflow as tf
 import numpy as np
 from matplotlib import pyplot as plt

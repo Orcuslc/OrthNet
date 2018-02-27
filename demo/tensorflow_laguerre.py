@@ -1,6 +1,6 @@
 import sys
-sys.path.append('../../')
-from OrthNet.tensorflow import laguerre_tensor, multi_dim_laguerre_tensor
+sys.path.append('../')
+from orthnet.tensorflow import laguerre_tensor, multi_dim_laguerre_tensor
 import tensorflow as tf
 import numpy as np
 from matplotlib import pyplot as plt

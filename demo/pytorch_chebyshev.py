@@ -1,6 +1,7 @@
 import sys
-sys.path.append('../../')
-from OrthNet.pytorch import chebyshev_tensor, multi_dim_chebyshev_tensor
+sys.path.append('../')
+from orthnet.pytorch import chebyshev_tensor, multi_dim_chebyshev_tensor
+
 import torch
 from torch.autograd import Variable
 import numpy as np

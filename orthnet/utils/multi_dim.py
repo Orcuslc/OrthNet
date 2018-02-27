@@ -17,4 +17,5 @@ def enumerate_dim(n, dim):
 			dfs(res, cur+[i], n-i, dim-1)
 	res = []
 	dfs(res, [], n, dim)
+	print('Order:', res)
 	return res
