@@ -39,7 +39,7 @@ def legendre_tensor(n, x):
 
 def multi_dim_legendre_list(n, var):
 	"""
-	multi dimensional legendre polynomials
+	multi dimensional Legendre polynomials
 
 	input:
 		n: order of target polynomial
