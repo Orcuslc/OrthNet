@@ -39,7 +39,7 @@ def hermite_tensor(n, x):
 
 def multi_dim_hermite_list(n, var):
 	"""
-	multi dimensional Hermite polynomials
+	multi dimensional Hermite polynomials (in probability theory)
 
 	input:
 		n: order of target polynomial
@@ -50,14 +50,14 @@ def multi_dim_hermite_list(n, var):
 
 	>>> multi_dim_hermite_list(2, [x, y])
 	>>> [p0(x)p0(y), p1(x)p0(y), p0(x)p1(y), p2(x)p0(y), p1(x)p1(y), p0(x)p2(y)]
-	# Each pi(x) is an Hermite polynomail of order i, (a list)
+	# Each pi(x) is an Hermite polynomial of order i, (a list)
 	"""
 	return multi_dim_poly_list(n, var, hermite_list)
 
 
 def multi_dim_hermite_tensor(n, var):
 	"""
-	multi dimensional hermite polynomials
+	multi dimensional hermite polynomials (in probability theory)
 
 	input:
 		n: order of target polynomial
@@ -68,7 +68,7 @@ def multi_dim_hermite_tensor(n, var):
 
 	>>> multi_dim_hermite_tensor(2, [x, y])
 	>>> Tensor([p0(x)p0(y), p1(x)p0(y), p0(x)p1(y), p2(x)p0(y), p1(x)p1(y), p0(x)p2(y)])
-	# Each pi(x) is an Hermite polynomail of order i, (a tensor)
+	# Each pi(x) is an Hermite polynomial of order i, (a tensor)
 	"""
 	return multi_dim_poly_tensor(n, var, hermite_list)
 
@@ -109,7 +109,7 @@ def hermite2_tensor(n, x):
 
 def multi_dim_hermite2_list(n, var):
 	"""
-	multi dimensional Hermite polynomials
+	multi dimensional Hermite polynomials (in physics)
 
 	input:
 		n: order of target polynomial
@@ -120,14 +120,14 @@ def multi_dim_hermite2_list(n, var):
 
 	>>> multi_dim_hermite_list(2, [x, y])
 	>>> [p0(x)p0(y), p1(x)p0(y), p0(x)p1(y), p2(x)p0(y), p1(x)p1(y), p0(x)p2(y)]
-	# Each pi(x) is an Hermite polynomail of order i, (a list)
+	# Each pi(x) is an Hermite polynomial of order i, (a list)
 	"""
 	return multi_dim_poly_list(n, var, hermite2_list)
 
 
 def multi_dim_hermite2_tensor(n, var):
 	"""
-	multi dimensional hermite polynomials
+	multi dimensional hermite polynomials (in physics)
 
 	input:
 		n: order of target polynomial
@@ -138,6 +138,6 @@ def multi_dim_hermite2_tensor(n, var):
 
 	>>> multi_dim_hermite_tensor(2, [x, y])
 	>>> Tensor([p0(x)p0(y), p1(x)p0(y), p0(x)p1(y), p2(x)p0(y), p1(x)p1(y), p0(x)p2(y)])
-	# Each pi(x) is an Hermite polynomail of order i, (a tensor)
+	# Each pi(x) is an Hermite polynomial of order i, (a tensor)
 	"""
 	return multi_dim_poly_tensor(n, var, hermite2_list)
