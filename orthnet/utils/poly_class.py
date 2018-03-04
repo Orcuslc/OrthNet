@@ -102,13 +102,5 @@ class Poly:
 			>>> x.polys_list
 			>>> [[p0(x)p0(y)], [p1(x)p0(y)], [p0(x)p1(y)], [p2(x)p0(y)], [p1(x)p1(y)], [p0(x)p2(y)]]
 		"""
-		one_dim_polys, polys = 
-		if self.n == 0:
-			return [initial[0](self.x)]
-		elif self.n == 1:
-			return [initial[0](x), initial[1](x)]
-		else: 
-			polys = [initial[0](x), initial[1](x)]
-			for i in range(1, n):
-				polys.append(self.recurrence(polys[-1], polys[-2], i, self.x))
-			return polys
+		one_dim_polys, polys = [], []
+		
