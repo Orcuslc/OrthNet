@@ -1,6 +1,6 @@
 import sys
-sys.path.append('../')
-from orthnet.pytorch import laguerre_tensor, multi_dim_laguerre_tensor
+sys.path.append('../../')
+from OrthNet.orthnet.pytorch import laguerre_tensor, multi_dim_laguerre_tensor
 import torch
 from torch.autograd import Variable
 import numpy as np
@@ -8,31 +8,36 @@ from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 order1 = 5
-order2 = 3
+order2 = 5
 
 x1_data = np.linspace(-1, 1, 100).reshape((-1, 1))
 x2_data = np.linspace(-1, 1, 100).reshape((-1, 1))
 
-x1 = Variable(torch.Tensor(x1_data))
-x2 = Variable(torch.Tensor(x2_data))
+# x1 = Variable(torch.Tensor(x1_data))
+# x2 = Variable(torch.Tensor(x2_data))
+# x3 = Variable(torch.Tensor(x2_data))
+# x4 = Variable(torch.Tensor(x2_data))
+x = [Variable(torch.Tensor(x2_data)) for i in range(10)]
 
-y1 = laguerre_tensor(n = order1, x = x1)
-y2 = multi_dim_laguerre_tensor(n = order2, var = [x1, x2])
+# y1 = laguerre_tensor(n = order1, x = x1)
+y2 = multi_dim_laguerre_tensor(n = order2, var = x)
 
-z1 = y1.data.numpy()
-z2 = y2.data.numpy()
+print(y2.shape)
 
-fig1 = plt.figure()
-ax1 = fig1.gca()
+# z1 = y1.data.numpy()
+# z2 = y2.data.numpy()
 
-for i in range(order1+1):
-	ax1.plot(x1_data, z1[:, i], label = 'n = '+str(i))
-ax1.legend()
-ax1.grid(True)
+# fig1 = plt.figure()
+# ax1 = fig1.gca()
 
-fig2 = plt.figure()
-ax2 = fig2.gca(projection='3d')
-x1_data, x2_data = np.meshgrid(x1_data, x2_data)
-ax2.plot_surface(X = x1_data, Y = x2_data, Z = z2[:, -2])
+# for i in range(order1+1):
+# 	ax1.plot(x1_data, z1[:, i], label = 'n = '+str(i))
+# ax1.legend()
+# ax1.grid(True)
 
-plt.show()
+# fig2 = plt.figure()
+# ax2 = fig2.gca(projection='3d')
+# x1_data, x2_data = np.meshgrid(x1_data, x2_data)
+# ax2.plot_surface(X = x1_data, Y = x2_data, Z = z2[:, -2])
+
+# plt.show()
