@@ -40,12 +40,18 @@ def enum_dim(n, dim):
 	>>> [[0, 0], [1, 0], [0, 1], [2, 0], [1, 1], [0, 2], [3, 0], [2, 1], [1, 2], [0, 3]]
 	"""
 	res = [[[0 for i in range(dim)]]]
-	for i in range(dim+1):
+	for i in range(n):
 		cur = []
 		for comb in res[-1]:
 			for j in range(len(comb)):
 				tmp = comb[:]
 				tmp[j] += 1
-				cur.append(tmp)
+				flag = 1
+				for k in cur:
+					if tmp == k:
+						flag = 0
+						break
+				if flag:
+					cur.append(tmp)
 		res.append(cur)
 	return res
