@@ -33,7 +33,7 @@ class Poly1d:
 		self.recurrence = recurrence
 
 	@property
-	def polys_list(self):
+	def list(self):
 		"""
 		generate a list of function values in lexicographical order.
 
@@ -51,7 +51,7 @@ class Poly1d:
 			return polys
 
 	@property
-	def poly_tensor(self):
+	def tensor(self):
 		"""
 		generate a tensor of function values in lexicographical order.
 
@@ -62,6 +62,7 @@ class Poly1d:
 			return tf.concat(self.polys_list, axis = 1)
 		else:
 			return torch.cat(self.polys_list, dim = 1)
+
 
 
 class Poly:
@@ -93,7 +94,7 @@ class Poly:
 		self.recurrence = recurrence
 
 	@property
-	def polys_list(self):
+	def list(self):
 		"""
 		generate a list of half tensor product of function values in lexicographical order.
 
@@ -103,4 +104,46 @@ class Poly:
 			>>> [[p0(x)p0(y)], [p1(x)p0(y)], [p0(x)p1(y)], [p2(x)p0(y)], [p1(x)p1(y)], [p0(x)p2(y)]]
 		"""
 		one_dim_polys, polys = [], []
-		
+		for var in self.x:
+			tmp = Poly1d(self.module, self.n, var, self.initial, self.recurrence)
+			one_dim_polys.append(tmp.list)
+		for i in range(self.n+1):
+
+
+
+# class Poly(Poly1d):
+# 	"""
+# 	Base class, multi-dimensional orthogonal polynomials by three-term recursion and tensor product.
+# 	"""
+# 	def __init__(self, module, n, x, initial, recurrence):
+# 		"""
+# 		input:
+# 			- module: 'tensorflow' or 'pytorch'
+# 			- n: order of target polynomial
+# 			- x: a list of tensors (as variables)
+# 			- initial: initial value, a list of two functions
+# 			- recurrence: the function of recurrence, with three variables:
+# 				P_{n+1} = f(P_{n}, P_{n-1}, n, x) 
+# 			(initial and recurrence are functions on Tensors)
+
+# 		output:
+# 			- y: a list of function values
+# 		"""
+# 		assert isinstance(x, list) or isinstance(x, tuple), "x should be a list or a tuple of tensors."
+# 		super().__init__(self, module, n, x[0], initial, recurrence)
+# 		self.x = x # Override super.x
+
+# 	@property
+# 	def list(self):
+# 		"""
+# 		generate a list of half tensor product of function values in lexicographical order.
+
+# 		example:
+# 			>>> x = Poly(_, 2, [x, y], _)
+# 			>>> x.polys_list
+# 			>>> [[p0(x)p0(y)], [p1(x)p0(y)], [p0(x)p1(y)], [p2(x)p0(y)], [p1(x)p1(y)], [p0(x)p2(y)]]
+# 		"""
+# 		one_dim_polys, polys = [], []
+# 		for var in self.x:
+# 			tmp = Poly1d(self.module, n, x, initial, recurrence)
+# 			one_dim_polys.append()
