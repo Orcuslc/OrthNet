@@ -96,26 +96,97 @@ class Poly:
 			self.dim = self.x.get_shape()[1].value
 		else:
 			self.dim = x.size()[1]
-		self._poly_list = [Poly1d(module, degree, x[:, i], initial, recurrence).list for i in range(self.dim)]
-		self._poly_list = []
-		self._combination = None
+		self._comb()
+		self._poly1d = [Poly1d(module, degree, x[:, i], initial, recurrence) for i in range(self.dim)]
+		self._list = []
+		self._init()
+
+	def _comb(self):
+		comb = enum_dim(self.degree, self.dim)
+		self._index = comb[0]
+		self._combination = comb[1:]
+
+	def _compute(self, end):
+		if not self._list:
+			start = 0
+		else:
+			start = self._index[self._index.index(len(self._list))+1]
+		if end == self.degree:
+			comb = self._combination[start:]
+		else:
+			comb = self._combination[start:self._index[end]+1]
+		res = []
+		for c in comb:
+			poly = 1.
+			if self.module == 'tensorflow':
+				for i in range(len(c)):	
+					poly = tf.multiply(poly, self._poly1d[i].list[c[i]])
+			else:
+				for i in range(len(c)):
+					poly = poly*self._poly1d[i].list[c[i]]
+			res.append(poly)
+		return res
+
+	def _init(self):
+		self._list = self.list
+
+	@property
+	def length(self):
+		"""
+		return the number of polynomials
+		"""
+		return len(self._list[0])
+
+	@property
+	def list(self):
+		"""
+		return a list of polynomials
+		"""
+		if not self._list:
+			self._list.append(self._compute(self.degree))
+		return self._list
+
+	@property
+	def tensor(self):
+		"""
+		return a tensor of polynomials
+		"""
+		if self.module == 'tensorflow':
+			return tf.concat(self.list, axis = 1)
+		else:
+			return torch.cat(self.list, dim = 1)
+
+	def update(self, newdegree):
+		"""
+		update to a higher degree
+		"""
+		if newdegree > self.degree:
+			self.degree = newdegree
+			self._comb()
+			for i in range(self.dim):
+				self._poly1d[i].update(newdegree)
+			self._list[0].extend(self._compute(newdegree))
+
+	@property
+	def index(self):
+		"""
+		return the index of the first combination of each degree
+		"""
+		return self._index
 
 	@property
 	def combination(self):
 		"""
-		return the combination of 
+		return all combinations of all degrees
 		"""
-		if not self._combination:
-			self._combination = enum_dim(self.degree, self.dim)
 		return self._combination
 
-	def _compute_one_degree(self, degree):
-		pass
-
-	def _compute(self, end):
-		pass
-
-	@property
-	def list(self):
-		pass
-	
+	def combination_degree(self, degree):
+		"""
+		return all combination of a given degree
+		"""
+		assert degree <= self.degree, "Degree should be less or equal than the highest degree."
+		if degree == self.degree:
+			return self._combination[self._index[degree]:]
+		else:
+			return self._combination[self._index[degree]:self._index[degree+1]]
