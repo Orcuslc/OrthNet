@@ -20,7 +20,7 @@ class Poly1d:
 		"""
 		self.module = module.lower()
 		assert self.module in ['tensorflow', 'pytorch'], "Module should be either 'tensorflow' or 'pytorch'."
-		assert n >= 0 and isinstance(n, int), "Degree should be a non-negative integer."
+		assert degree >= 0 and isinstance(degree, int), "Degree should be a non-negative integer."
 		assert len(initial) == 2, "Need two initial functions."
 		if self.module == 'tensorflow':
 			assert isinstance(x, tf.Variable) or isinstance(x, tf.Tensor), "x should be an isinstance of tensorflow.Variable or tensorflow.Tensor."
@@ -83,7 +83,7 @@ class Poly:
 		"""
 		self.module = module.lower()
 		assert self.module in ['tensorflow', 'pytorch'], "Module should be either 'tensorflow' or 'pytorch'."
-		assert n >= 0 and isinstance(n, int), "Degree should be a non-negative integer."
+		assert degree >= 0 and isinstance(degree, int), "Degree should be a non-negative integer."
 		assert len(initial) == 2, "Need two initial functions."
 		if self.module == 'tensorflow':
 			assert isinstance(x, tf.Variable) or isinstance(x, tf.Tensor), "x should be an isinstance of tensorflow.Variable or tensorflow.Tensor."
@@ -93,12 +93,29 @@ class Poly:
 		self.x = x
 		self.recurrence = recurrence
 		if self.module == 'tensorflow':
-			self.shape = [i.value for i in self.x.get_shape()]
+			self.dim = self.x.get_shape()[1].value
 		else:
-			self.shape = list(self.x.size())
-		self._list = [[initial[0](x[:, i]), initial[1](x[:, i])] for i in range(self.shape[1])]
-		self.dims()
+			self.dim = x.size()[1]
+		self._poly_list = [Poly1d(module, degree, x[:, i], initial, recurrence).list for i in range(self.dim)]
+		self._poly_list = []
+		self._combination = None
 
 	@property
-	def dims(self):
-		for i in range()
+	def combination(self):
+		"""
+		return the combination of 
+		"""
+		if not self._combination:
+			self._combination = enum_dim(self.degree, self.dim)
+		return self._combination
+
+	def _compute_one_degree(self, degree):
+		pass
+
+	def _compute(self, end):
+		pass
+
+	@property
+	def list(self):
+		pass
+	
