@@ -25,7 +25,8 @@ std::vector<std::vector<int> > enum_dim(int n, int dim) {
 		a 2D-list, each element a combination (a list)
 */
 	std::vector<std::vector<int> > res;
-	std::vector<int> cur;
-	dfs(res, cur, n, dim);
+	for(int i = 0; i <= n; i++) {
+		dfs(res, std::vector<int>(), i, dim);
+	}
 	return res;
 }

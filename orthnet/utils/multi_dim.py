@@ -55,3 +55,10 @@ def enum_dim(n, dim):
 					cur.append(tmp)
 		res.append(cur)
 	return res
+
+
+def dim(n, d):
+	res = []
+	for i in range(n+1):
+		res.append(enum_dim(i, d))
+	return res
