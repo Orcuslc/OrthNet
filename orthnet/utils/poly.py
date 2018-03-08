@@ -1,7 +1,6 @@
 import tensorflow as tf
 import torch
-from multi_dim import enumerate_dim as enumerate_dim
-from _enum_dim import enum_dim as enum_dim_cpp
+from _enum_dim import enum_dim as enum_dim
 
 
 class Poly1d:
@@ -98,5 +97,8 @@ class Poly:
 		else:
 			self.shape = list(self.x.size())
 		self._list = [[initial[0](x[:, i]), initial[1](x[:, i])] for i in range(self.shape[1])]
+		self.dims()
 
-		
+	@property
+	def dims(self):
+		for i in range()
