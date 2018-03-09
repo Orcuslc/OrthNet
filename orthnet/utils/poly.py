@@ -1,6 +1,6 @@
 import tensorflow as tf
 import torch
-from _enum_dim import enum_dim as enum_dim
+from ._enum_dim import enum_dim as enum_dim
 
 
 class Poly1d:
@@ -31,22 +31,20 @@ class Poly1d:
 		self.recurrence = recurrence
 		self._list = [initial[0](self.x), initial[1](self.x)]
 
-	def _compute(self, end):
+	def _compute(self, start, end):
 		"""
-		Compute polynomials up to order `end`
+		Compute polynomials from degree `start`(included) to `end`(included)
 		"""
-		degree = len(self._list)-1
-		if end > degree:
-			for i in range(degree, end):
-				self._list.append(self.recurrence(self._list[-1], self._list[-2], i, self.x))
+		for i in range(start, end+1):
+			self._list.append(self.recurrence(self._list[-1], self._list[-2], i, self.x))
 
 	@property
 	def list(self):
 		"""
 		return a list of polynomials
 		"""
-		self._compute(self.degree)
-		return self._list
+		self._compute(len(self._list), self.degree)
+		return [self._list[0]] if self.degree == 0 else self._list
 
 	@property
 	def tensor(self):
@@ -62,9 +60,8 @@ class Poly1d:
 		"""
 		update polynomials to a higher degree
 		"""
+		self._compute(self.degree+1, newdegree)
 		self.degree = newdegree
-		self._compute(newdegree)
-
 
 class Poly:
 	"""
@@ -91,30 +88,32 @@ class Poly:
 			assert isinstance(x, torch.autograd.Variable) or isinstance(x, torch.Tensor), "x should be an isinstance of torch.autograd.Variable or torch.Tensor."
 		self.degree = degree
 		self.x = x
+		self.initial = initial
 		self.recurrence = recurrence
 		if self.module == 'tensorflow':
 			self.dim = self.x.get_shape()[1].value
 		else:
 			self.dim = x.size()[1]
-		self._comb()
-		self._poly1d = [Poly1d(module, degree, x[:, i], initial, recurrence) for i in range(self.dim)]
-		self._list = []
 		self._init()
+		self._list = []
+
+	def _init(self):
+		self._comb()
+		self._poly1d = [Poly1d(self.module, self.degree, self.x[:, i], self.initial, self.recurrence) for i in range(self.dim)]
 
 	def _comb(self):
 		comb = enum_dim(self.degree, self.dim)
 		self._index = comb[0]
 		self._combination = comb[1:]
 
-	def _compute(self, end):
-		if not self._list:
-			start = 0
-		else:
-			start = self._index[self._index.index(len(self._list))+1]
+	def _compute(self, start, end):
+		"""
+		compute polynomials from degree `start`(included) and `end`(included).
+		"""
 		if end == self.degree:
-			comb = self._combination[start:]
+			comb = self._combination[self._index[start]:]
 		else:
-			comb = self._combination[start:self._index[end]+1]
+			comb = self._combination[self._index[start]:self._index[end]+1]
 		res = []
 		for c in comb:
 			poly = 1.
@@ -127,8 +126,26 @@ class Poly:
 			res.append(poly)
 		return res
 
-	def _init(self):
-		self._list = self.list
+	# def _compute(self, end):
+	# 	if not self._list:
+	# 		start = 0
+	# 	else:
+	# 		start = self._index[self._index.index(len(self._list))+1]
+	# 	if end == self.degree:
+	# 		comb = self._combination[start:]
+	# 	else:
+	# 		comb = self._combination[start:self._index[end]+1]
+	# 	res = []
+	# 	for c in comb:
+	# 		poly = 1.
+	# 		if self.module == 'tensorflow':
+	# 			for i in range(len(c)):	
+	# 				poly = tf.multiply(poly, self._poly1d[i].list[c[i]])
+	# 		else:
+	# 			for i in range(len(c)):
+	# 				poly = poly*self._poly1d[i].list[c[i]]
+	# 		res.append(poly)
+	# 	return res
 
 	@property
 	def length(self):
@@ -143,7 +160,7 @@ class Poly:
 		return a list of polynomials
 		"""
 		if not self._list:
-			self._list.append(self._compute(self.degree))
+			self._list.append(self._compute(0, self.degree))
 		return self._list
 
 	@property
@@ -161,11 +178,12 @@ class Poly:
 		update to a higher degree
 		"""
 		if newdegree > self.degree:
+			original_degree = self.degree
 			self.degree = newdegree
 			self._comb()
 			for i in range(self.dim):
 				self._poly1d[i].update(newdegree)
-			self._list[0].extend(self._compute(newdegree))
+			self._list[0].extend(self._compute(original_degree+1, newdegree))
 
 	@property
 	def index(self):
