@@ -52,9 +52,9 @@ class Poly1d:
 		return a tensor of polynomials
 		"""
 		if self.module == 'tensorflow':
-			return tf.concat(self.list, axis = 1)
+			return tf.transpose(tf.concat(self.list, axis = 1))
 		else:
-			return torch.cat(self.list, dim = 1)
+			return torch.transpose(torch.cat(self.list, dim = 1))
 
 	def update(self, newdegree):
 		"""
@@ -169,9 +169,9 @@ class Poly:
 		return a tensor of polynomials
 		"""
 		if self.module == 'tensorflow':
-			return tf.concat(self.list, axis = 1)
+			return tf.transpose(tf.concat(self.list, axis = 1))
 		else:
-			return torch.cat(self.list, dim = 1)
+			return torch.transpose(torch.cat(self.list, dim = 1))
 
 	def update(self, newdegree):
 		"""
@@ -199,7 +199,7 @@ class Poly:
 		"""
 		return self._combination
 
-	def combination_degree(self, degree):
+	def get_one_degree_combination(self, degree):
 		"""
 		return all combination of a given degree
 		"""
@@ -208,3 +208,22 @@ class Poly:
 			return self._combination[self._index[degree]:]
 		else:
 			return self._combination[self._index[degree]:self._index[degree+1]]
+
+	def get_combination(self, start, end):
+		"""
+		return all combination of degrees from `start`(included)  to `end`(included)
+		"""
+		res = []
+		for degree in range(start, end+1):
+			res.extend(self.get_one_degree_combination(degree))
+		return tuple(res)
+
+	def get_poly(self, start, end):
+		"""
+		get polynomials from degree `start`(included) to `end`(included)
+		"""
+		assert start >= 0 and end <= self.degree, "Degree should be less or equal than highest degree"
+		if end == self.degree:
+			return self.tensor[:, self._index[start]:]
+		else:
+			return self.tensor[:, self._index[start]:self._index[end+1]]
