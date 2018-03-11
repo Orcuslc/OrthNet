@@ -35,7 +35,7 @@ class Poly1d:
 		"""
 		Compute polynomials from degree `start`(included) to `end`(included)
 		"""
-		for i in range(start, end+1):
+		for i in range(start-1, end):
 			self._list.append(self.recurrence(self._list[-1], self._list[-2], i, self.x))
 
 	@property
