@@ -16,7 +16,7 @@ class Chebyshev(Poly):
 
 		if module == 'tensorflow':
 			initial = [lambda x: tf.ones_like(x), lambda x: x]
-			recurrence = lambda p1, p2, n, x: tf.multiply(x, p1) - n*p2
+			recurrence = lambda p1, p2, n, x: 2*tf.multiply(x, p1) - p2
 		elif module == 'pytorch':
 			initial = [lambda x: torch.ones_like(x), lambda x: x]
 			recurrence = lambda p1, p2, n, x: 2*x*p1-p2
