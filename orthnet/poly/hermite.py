@@ -36,9 +36,9 @@ class Hermite2(Poly):
 		"""
 
 		if module == 'tensorflow':
-			initial = [lambda x: tf.ones_like(x), lambda x: x]
+			initial = [lambda x: tf.ones_like(x), lambda x: 2*x]
 			recurrence = lambda p1, p2, n, x: 2*(tf.multiply(x, p1) - n*p2)
 		elif module == 'pytorch':
-			initial = [lambda x: torch.ones_like(x), lambda x: x]
-			recurrence = lambda p1, p2, n, x: 2*(x*p1 - n*p2) - n*p2
+			initial = [lambda x: torch.ones_like(x), lambda x: 2*x]
+			recurrence = lambda p1, p2, n, x: 2*(x*p1 - n*p2)
 		Poly.__init__(self, module, degree, x, initial, recurrence)
