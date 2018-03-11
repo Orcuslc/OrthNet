@@ -120,39 +120,20 @@ class Poly:
 			if self.module == 'tensorflow':
 				for i in range(len(c)):	
 					poly = tf.multiply(poly, self._poly1d[i].list[c[i]])
+				poly = tf.reshape(poly, [-1, 1])
 			else:
 				for i in range(len(c)):
 					poly = poly*self._poly1d[i].list[c[i]]
+				poly.unsqueeze_(1)
 			res.append(poly)
 		return res
-
-	# def _compute(self, end):
-	# 	if not self._list:
-	# 		start = 0
-	# 	else:
-	# 		start = self._index[self._index.index(len(self._list))+1]
-	# 	if end == self.degree:
-	# 		comb = self._combination[start:]
-	# 	else:
-	# 		comb = self._combination[start:self._index[end]+1]
-	# 	res = []
-	# 	for c in comb:
-	# 		poly = 1.
-	# 		if self.module == 'tensorflow':
-	# 			for i in range(len(c)):	
-	# 				poly = tf.multiply(poly, self._poly1d[i].list[c[i]])
-	# 		else:
-	# 			for i in range(len(c)):
-	# 				poly = poly*self._poly1d[i].list[c[i]]
-	# 		res.append(poly)
-	# 	return res
 
 	@property
 	def length(self):
 		"""
 		return the number of polynomials
 		"""
-		return len(self._list[0])
+		return len(self.combination)
 
 	@property
 	def list(self):
@@ -160,7 +141,7 @@ class Poly:
 		return a list of polynomials
 		"""
 		if not self._list:
-			self._list.append(self._compute(0, self.degree))
+			self._list.extend(self._compute(0, self.degree))
 		return self._list
 
 	@property
@@ -169,9 +150,9 @@ class Poly:
 		return a tensor of polynomials
 		"""
 		if self.module == 'tensorflow':
-			return tf.transpose(tf.concat(self.list, axis = 1))
+			return tf.concat(self.list, axis = 1)
 		else:
-			return torch.transpose(torch.cat(self.list, dim = 1))
+			return torch.cat(self.list, dim = 1)
 
 	def update(self, newdegree):
 		"""
@@ -183,7 +164,7 @@ class Poly:
 			self._comb()
 			for i in range(self.dim):
 				self._poly1d[i].update(newdegree)
-			self._list[0].extend(self._compute(original_degree+1, newdegree))
+			self._list.extend(self._compute(original_degree+1, newdegree))
 
 	@property
 	def index(self):
