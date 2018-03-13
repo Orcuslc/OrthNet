@@ -1,7 +1,7 @@
 from distutils.core import setup, Extension
 
-ext = Extension('orthnet.utils.enum_dim',
-	sources = ['orthnet/utils/enum_dim.i'],
+ext = Extension('orthnet.utils._enum_dim',
+	sources = ['orthnet/utils/enum_dim/enum_dim.i'],
 	language = 'c++',
 	swig_opts = ['-c++'],
 	)
@@ -15,5 +15,5 @@ setup(
 	author = 'Chuan Lu',
 	author_email = 'chuan-lu@uiowa.edu',
 	ext_modules = [ext],
-	packages = ['orthnet', 'orthnet.tensorflow', 'orthnet.pytorch', 'orthnet.utils'],
+	packages = ['orthnet', 'orthnet.poly', 'orthnet.utils'],
 	)

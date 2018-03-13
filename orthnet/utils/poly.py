@@ -208,3 +208,15 @@ class Poly:
 			return self.tensor[:, self._index[start]:]
 		else:
 			return self.tensor[:, self._index[start]:self._index[end+1]]
+
+	def eval(self, coeff):
+		"""
+		return the values with coefficients given
+		"""
+		assert len(coeff) == self.length, "Coefficients should have a length equal to number of polynomials"
+		if self.module == 'tensorflow':
+			coeff = tf.reshape(tf.constant(coeff), shape = [-1, 1])
+			return tf.matmul(self.tensor, coeff)
+		else:
+			coeff = torch.Tensor(coeff, shape = [-1, 1])
+			return torch.matmul(self.tensor, coeff)
