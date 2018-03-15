@@ -8,7 +8,7 @@ ext = Extension('orthnet.utils._enum_dim',
 
 setup(
 	name = 'orthnet',
-	version = '0.1',
+	version = '0.2.0',
 	keywords = ['orthogonal polynomial', 'tensorflow', 'pytorch'],
 	description = 'TensorFlow and PyTorch layers for generating orthogonal polynomials',
 	license = 'MIT',
