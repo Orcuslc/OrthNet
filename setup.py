@@ -4,7 +4,12 @@ ext = Extension('orthnet.utils._enum_dim',
 	sources = ['orthnet/utils/enum_dim/enum_dim.i'],
 	language = 'c++',
 	swig_opts = ['-c++'],
-	)
+	extra_compile_args = [
+		'-std=c++11',
+		'-Wall',
+		'-Ofast',
+	]
+)
 
 setup(
 	name = 'orthnet',
