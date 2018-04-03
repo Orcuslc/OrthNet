@@ -2,7 +2,14 @@
 TensorFlow and PyTorch layers for generating multi-dimensional Orthogonal Polynomials
 
 ## Installation:
+1. the stable version:  
 `pip3 install orthnet`
+
+2. the dev version:
+```
+git clone https://github.com/orcuslc/orthnet.git && cd orthnet
+python3 setup.py build_ext --inplace && python3 setup.py install
+```
 
 ---
 ## Orthogonal polynomials supported:
