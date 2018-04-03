@@ -126,7 +126,7 @@ class Poly:
 			comb = self._combination[self._index[start]:self._index[end]+1]
 		res = []
 		for c in comb:
-			poly = 1.
+			poly = tf.constant(1, dtype = tf.float64)
 			if self.module == 'tensorflow':
 				for i in range(len(c)):	
 					poly = tf.multiply(poly, self._poly1d[i].list[c[i]])
