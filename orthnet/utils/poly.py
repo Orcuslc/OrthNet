@@ -63,6 +63,16 @@ class Poly1d:
 		self._compute(self.degree+1, newdegree)
 		self.degree = newdegree
 
+	def quadrature(self, func, weight):
+		if self.module == 'tensorflow':
+			weight = tf.reshape(tf.constant(weight), shape = [1, -1])
+			return tf.matmul(weight, tf.multiply(func(self.x), self.tensor))
+		else:
+			weight = torch.tensor(weight, shape = [1, -1])
+			return torch.matmul(weight, func(self.x)*self.tensor)
+
+
+
 class Poly:
 	"""
 	n-dimensional orthogonal polynomials by three-term recursion and tensor product
@@ -220,3 +230,11 @@ class Poly:
 		else:
 			coeff = torch.Tensor(coeff, shape = [-1, 1])
 			return torch.matmul(self.tensor, coeff)
+
+	def quadrature(self, func, weight):
+		if self.module == 'tensorflow':
+			weight = tf.reshape(tf.constant(weight), shape = [1, -1])
+			return tf.matmul(weight, tf.multiply(func(self.x), self.tensor))
+		else:
+			weight = torch.tensor(weight, shape = [1, -1])
+			return torch.matmul(weight, func(self.x)*self.tensor)
