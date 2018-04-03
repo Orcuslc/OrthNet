@@ -37,9 +37,9 @@ class Legendre_Normalized(Poly):
 		"""
 
 		if module == 'tensorflow':
-			initial = [lambda x: tf.ones_like(x), lambda x: x]
+			initial = [lambda x: tf.ones_like(x)*np.sqrt(1/2), lambda x: x*np.sqrt(3/2)]
 			recurrence = lambda p1, p2, n, x: (np.sqrt((2*n+1)*(2*n+3))*tf.multiply(x, p1)-n*np.sqrt((2*n+3)/(2*n-1))*p2)/(n+1)
 		elif module == 'pytorch':
-			initial = [lambda x: torch.ones_like(x), lambda x: x]
+			initial = [lambda x: torch.ones_like(x)*np.sqrt(1/2), lambda x: x*np.sqrt(3/2)]
 			recurrence = lambda p1, p2, n, x: (np.sqrt((2*n+1)*(2*n+3))*x*p1-n*np.sqrt((2*n+3)/(2*n-1))*p2)/(n+1)
 		Poly.__init__(self, module, degree, x, initial, recurrence)
