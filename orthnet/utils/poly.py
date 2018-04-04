@@ -126,13 +126,16 @@ class Poly:
 			comb = self._combination[self._index[start]:self._index[end]+1]
 		res = []
 		for c in comb:
-			poly = tf.constant(1, dtype = tf.float64)
+			poly = 1.
 			if self.module == 'tensorflow':
+				poly = tf.constant(1, dtype = tf.float64)
 				for i in range(len(c)):	
 					poly = tf.multiply(poly, self._poly1d[i].list[c[i]])
 				poly = tf.reshape(poly, [-1, 1])
 			else:
+				# poly = torch.autograd.Variable(torch.Tensor(self.x.size()[0], 1).zero_()+1.)
 				for i in range(len(c)):
+					# print(self._poly1d[i].list[c[i]])
 					poly = poly*self._poly1d[i].list[c[i]]
 				poly.unsqueeze_(1)
 			res.append(poly)
@@ -236,5 +239,5 @@ class Poly:
 			weight = tf.reshape(tf.constant(weight), shape = [1, -1])
 			return tf.matmul(weight, tf.multiply(func(self.x), self.tensor))
 		else:
-			weight = torch.tensor(weight, shape = [1, -1])
+			weight = torch.Tensor(weight).view(1, -1)
 			return torch.matmul(weight, func(self.x)*self.tensor)
