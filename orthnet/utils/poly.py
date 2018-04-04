@@ -7,7 +7,7 @@ class Poly1d:
 	"""
 	1-dimensional orthogonal polynomials by three-term recursion.
 	"""
-	def __init__(self, module, degree, x, initial, recurrence):
+	def __init__(self, module, degree, x, initial, recurrence, dtype = 'float32'):
 		"""
 		- input:
 			- module: 'tensorflow' or 'pytorch' (case insensitive)
@@ -17,6 +17,7 @@ class Poly1d:
 			- recurrence: the function of recurrence, with three variables:
 				P_{n+1} = f(P_{n}, P_{n-1}, n, x) 
 			(initial and recurrence are functions on Tensors)
+			- dtype: 'float32' or 'float64'
 		"""
 		self.module = module.lower()
 		assert self.module in ['tensorflow', 'pytorch'], "Module should be either 'tensorflow' or 'pytorch'."
@@ -25,10 +26,12 @@ class Poly1d:
 		if self.module == 'tensorflow':
 			assert isinstance(x, tf.Variable) or isinstance(x, tf.Tensor), "x should be an isinstance of tensorflow.Variable or tensorflow.Tensor."
 		else:
-			assert isinstance(x, torch.autograd.Variable) or isinstance(x, torch.Tensor), "x should be an isinstance of torch.autograd.Variable or torch.Tensor."
+			assert isinstance(x, torch.autograd.Variable) or isinstance(x, torch.Tensor) or isinstance(x, torch.DoubleTensor), "x should be an isinstance of torch.autograd.Variable or torch.Tensor."
+		assert dtype in ['float32', 'float64'], "dtype should be either 'float32' or 'float64'"
 		self.degree = degree
 		self.x = x
 		self.recurrence = recurrence
+		self.dtype = dtype
 		self._list = [initial[0](self.x), initial[1](self.x)]
 
 	def _compute(self, start, end):
@@ -77,7 +80,7 @@ class Poly:
 	"""
 	n-dimensional orthogonal polynomials by three-term recursion and tensor product
 	"""
-	def __init__(self, module, degree, x, initial, recurrence):
+	def __init__(self, module, degree, x, initial, recurrence, dtype = 'float32'):
 		"""
 		- input:
 			- module: 'tensorflow' or 'pytorch' (case insensitive)
@@ -87,6 +90,7 @@ class Poly:
 			- recurrence: the function of recurrence, with three variables:
 				P_{n+1} = f(P_{n}, P_{n-1}, n, x) 
 			(initial and recurrence are functions on Tensors)
+			- dtype: 'float32' or 'float64'
 		"""
 		self.module = module.lower()
 		assert self.module in ['tensorflow', 'pytorch'], "Module should be either 'tensorflow' or 'pytorch'."
@@ -95,21 +99,23 @@ class Poly:
 		if self.module == 'tensorflow':
 			assert isinstance(x, tf.Variable) or isinstance(x, tf.Tensor), "x should be an isinstance of tensorflow.Variable or tensorflow.Tensor."
 		else:
-			assert isinstance(x, torch.autograd.Variable) or isinstance(x, torch.Tensor), "x should be an isinstance of torch.autograd.Variable or torch.Tensor."
+			assert isinstance(x, torch.autograd.Variable) or isinstance(x, torch.Tensor) or isinstance(x, torch.DoubleTensor), "x should be an isinstance of torch.autograd.Variable or torch.Tensor."
+		assert dtype in ['float32', 'float64'], "dtype should be either 'float32' or 'float64'"
 		self.degree = degree
 		self.x = x
 		self.initial = initial
 		self.recurrence = recurrence
+		self.dtype = dtype
 		if self.module == 'tensorflow':
 			self.dim = self.x.get_shape()[1].value
 		else:
 			self.dim = x.size()[1]
 		self._init()
-		self._list = []
+		self._list = []	
 
 	def _init(self):
 		self._comb()
-		self._poly1d = [Poly1d(self.module, self.degree, self.x[:, i], self.initial, self.recurrence) for i in range(self.dim)]
+		self._poly1d = [Poly1d(self.module, self.degree, self.x[:, i], self.initial, self.recurrence, self.dtype) for i in range(self.dim)]
 
 	def _comb(self):
 		comb = enum_dim(self.degree, self.dim)
@@ -126,12 +132,19 @@ class Poly:
 			comb = self._combination[self._index[start]:self._index[end]+1]
 		res = []
 		for c in comb:
-			poly = tf.constant(1, dtype = tf.float64)
 			if self.module == 'tensorflow':
+				if self.dtype == 'float32':
+					poly = tf.constant(1, dtype = tf.float32)
+				else:
+					poly = tf.constant(1, dtype = tf.float64)
 				for i in range(len(c)):	
 					poly = tf.multiply(poly, self._poly1d[i].list[c[i]])
 				poly = tf.reshape(poly, [-1, 1])
 			else:
+				if self.dtype == 'float32':
+					poly = torch.ones([self.x.size()[0]])
+				else:
+					poly = torch.ones([self.x.size()[0]]).double()
 				for i in range(len(c)):
 					poly = poly*self._poly1d[i].list[c[i]]
 				poly.unsqueeze_(1)
