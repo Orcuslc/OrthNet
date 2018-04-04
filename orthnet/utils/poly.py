@@ -249,5 +249,5 @@ class Poly:
 			weight = tf.reshape(tf.constant(weight), shape = [1, -1])
 			return tf.matmul(weight, tf.multiply(func(self.x), self.tensor))
 		else:
-			weight = torch.tensor(weight, shape = [1, -1])
+			weight = torch.Tensor(weight).view(1, -1)
 			return torch.matmul(weight, func(self.x)*self.tensor)
