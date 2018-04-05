@@ -13,9 +13,9 @@ ext = Extension('orthnet.utils._enum_dim',
 
 setup(
 	name = 'orthnet',
-	version = '0.2.2',
-	keywords = ['orthogonal polynomial', 'tensorflow', 'pytorch'],
-	description = 'TensorFlow and PyTorch layers for generating orthogonal polynomials',
+	version = '0.3.0',
+	keywords = ['orthogonal polynomial', 'tensorflow', 'pytorch', 'numpy'],
+	description = 'TensorFlow, PyTorch and Numpy layers for generating orthogonal polynomials',
 	license = 'MIT',
 	author = 'Chuan Lu',
 	author_email = 'chuan-lu@uiowa.edu',
