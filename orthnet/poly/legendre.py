@@ -7,7 +7,7 @@ class Legendre(Poly):
 	"""
 	Legendre Polynomials
 	"""
-	def __init__(self, module, degree, x, dtype = 'float32', loglevel = 0):
+	def __init__(self, module, degree, x, dtype = 'float32', loglevel = 0, index_comb = None):
 		"""
 		input:
 			module: 'tensorflow', 'pytorch', or 'numpy'
@@ -15,6 +15,7 @@ class Legendre(Poly):
 			x: a tensor of shape [Nsample*Nparameter], each row is a sample point, each column represents a parameter
 			dtype: 'float32' or 'float64'
 			loglevel: 1 to print time info and 0 to mute
+			index_comb: combination of tensor product indices. If index_comb == None, the class will generate a new combination.
 		"""
 
 		if module == 'tensorflow':
@@ -26,14 +27,14 @@ class Legendre(Poly):
 		elif module == 'numpy':
 			initial = [lambda x: np.ones_like(x), lambda x: x]
 			recurrence = lambda p1, p2, n, x: ((2*n+1)*x*p1-n*p2)/(n+1)
-		Poly.__init__(self, module, degree, x, initial, recurrence, dtype, loglevel)
+		Poly.__init__(self, module, degree, x, initial, recurrence, dtype, loglevel, index_comb)
 
 
 class Legendre_Normalized(Poly):
 	"""
 	Normalized Legendre Polynomials with integral be 1 if n = m.
 	"""
-	def __init__(self, module, degree, x, dtype = 'float32', loglevel = 0):
+	def __init__(self, module, degree, x, dtype = 'float32', loglevel = 0, index_comb = None):
 		"""
 		input:
 			module: 'tensorflow' or 'pytorch'
@@ -41,6 +42,7 @@ class Legendre_Normalized(Poly):
 			x: a tensor of shape [Nsample*Nparameter], each row is a sample point, each column represents a parameter
 			dtype: 'float32' or 'float64'
 			loglevel: 1 to print time info and 0 to mute
+			index_comb: combination of tensor product indices. If index_comb == None, the class will generate a new combination.
 		"""
 
 		if module == 'tensorflow':
@@ -52,4 +54,4 @@ class Legendre_Normalized(Poly):
 		elif module == 'numpy':
 			initial = [lambda x: np.ones_like(x)*np.sqrt(1/2), lambda x: x*np.sqrt(3/2)]
 			recurrence = lambda p1, p2, n, x: (np.sqrt((2*n+1)*(2*n+3))*x*p1-n*np.sqrt((2*n+3)/(2*n-1))*p2)/(n+1)
-		Poly.__init__(self, module, degree, x, initial, recurrence, dtype, loglevel)
+		Poly.__init__(self, module, degree, x, initial, recurrence, dtype, loglevel, index_comb)

@@ -7,7 +7,7 @@ class Jacobi(Poly):
 	"""
 	Jacobi Polynomials
 	"""
-	def __init__(self, module, degree, x, alpha, beta, dtype = 'float32', loglevel = 0):
+	def __init__(self, module, degree, x, alpha, beta, dtype = 'float32', loglevel = 0, index_comb = None):
 		"""
 		input:
 			module: 'tensorflow', 'pytorch' or 'numpy'
@@ -16,6 +16,7 @@ class Jacobi(Poly):
 			alpha, beta: the parameters of Jacobi polynomials
 			dtype: 'float32' or 'float64'
 			loglevel: 1 to print time info and 0 to mute
+			index_comb: combination of tensor product indices. If index_comb == None, the class will generate a new combination.
 		"""
 		if module == 'tensorflow':
 			initial = [lambda x: tf.ones_like(x), lambda x: 0.5*(alpha+beta+2)*x+0.5*(alpha-beta)]
@@ -26,4 +27,4 @@ class Jacobi(Poly):
 		elif module == 'numpy':
 			initial = [lambda x: np.ones_like(x), lambda x: 0.5*(alpha+beta+2)*x+0.5*(alpha-beta)]
 			recurrence = lambda p1, p2, n, x: ((2*n+alpha+beta-1)*((2*n+alpha+beta)*(2*n+alpha+beta-2)*x+alpha**2-beta**2)*p1 - 2*(n+alpha-1)*(n+beta-1)*(2*n+alpha+beta)*p2)/(2*n*(n+alpha+beta)*(2*n+alpha+beta-2))			
-		Poly.__init__(self, module, degree, x, initial, recurrence, dtype, loglevel)
+		Poly.__init__(self, module, degree, x, initial, recurrence, dtype, loglevel, index_comb)

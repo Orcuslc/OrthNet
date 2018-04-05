@@ -91,7 +91,7 @@ class Poly:
 	"""
 	n-dimensional orthogonal polynomials by three-term recursion and tensor product
 	"""
-	def __init__(self, module, degree, x, initial, recurrence, dtype = 'float32', loglevel = 0):
+	def __init__(self, module, degree, x, initial, recurrence, dtype = 'float32', loglevel = 0, index_comb = None):
 		"""
 		- input:
 			- module: 'tensorflow', 'pytorch' or 'numpy' (case insensitive)
@@ -102,6 +102,7 @@ class Poly:
 				P_{n+1} = f(P_{n}, P_{n-1}, n, x) 
 			(initial and recurrence are functions on Tensors)
 			- dtype: 'float32' or 'float64'
+			- index_comb: combination of tensor product indices. If index_comb == None, the class will generate a new combination.
 		"""
 		self.module = module.lower()
 		assert self.module in ['tensorflow', 'pytorch', 'numpy'], "Module should be one of ['tensorflow', 'pytorch', 'numpy']."
@@ -126,12 +127,13 @@ class Poly:
 			self.dim = x.size()[1]
 		else:
 			self.dim = x.shape[1]
-		self._init()
-		self._list = []	
-
-	def _init(self):
-		self._comb()
+		if index_comb == None:
+			self._comb()
+		else:
+			self._index = index_comb[0]
+			self._combination = index_comb[1]
 		self._poly1d = [Poly1d(self.module, self.degree, self.x[:, i], self.initial, self.recurrence, self.dtype) for i in range(self.dim)]
+		self._list = []	
 
 	def _comb(self):
 		@timeit(self.loglevel)
@@ -228,6 +230,15 @@ class Poly:
 			for i in range(self.dim):
 				self._poly1d[i].update(newdegree)
 			self._list.extend(self._compute(original_degree+1, newdegree))
+
+	@property
+	def index_comb(self):
+		"""
+		return index and combination for future usage
+		"""
+		if not self._index or not self._combination:
+			self._comb()
+		return (self._index, self._combination)
 
 	@property
 	def index(self):

@@ -7,7 +7,7 @@ class Hermite(Poly):
 	"""
 	Hermite Polynomials of the first kind (in probability theory)
 	"""
-	def __init__(self, module, degree, x, dtype = 'float32', loglevel = 0):
+	def __init__(self, module, degree, x, dtype = 'float32', loglevel = 0, index_comb = None):
 		"""
 		input:
 			module: 'tensorflow', 'pytorch' or 'numpy'
@@ -15,6 +15,7 @@ class Hermite(Poly):
 			x: a tensor of shape [Nsample*Nparameter], each row is a sample point, each column represents a parameter
 			dtype: 'float32' or 'float64'
 			loglevel: 1 to print time info and 0 to mute
+			index_comb: combination of tensor product indices. If index_comb == None, the class will generate a new combination.
 		"""
 
 		if module == 'tensorflow':
@@ -26,14 +27,14 @@ class Hermite(Poly):
 		elif module == 'numpy':
 			initial = [lambda x: np.ones_like(x), lambda x: x]
 			recurrence = lambda p1, p2, n, x: x*p1 - n*p2			
-		Poly.__init__(self, module, degree, x, initial, recurrence, dtype, loglevel)
+		Poly.__init__(self, module, degree, x, initial, recurrence, dtype, loglevel, index_comb)
 		
 
 class Hermite2(Poly):
 	"""
 	Hermite Polynomials of the second kind (in Physics)
 	"""
-	def __init__(self, module, degree, x, dtype = 'float32', loglevel = 0):
+	def __init__(self, module, degree, x, dtype = 'float32', loglevel = 0, index_comb = None):
 		"""
 		input:
 			module: 'tensorflow', 'pytorch' or 'numpy'
@@ -41,6 +42,7 @@ class Hermite2(Poly):
 			x: a tensor of shape [Nsample*Nparameter], each row is a sample point, each column represents a parameter
 			dtype: 'float32' or 'float64'
 			loglevel: 1 to print time info and 0 to mute
+			index_comb: combination of tensor product indices. If index_comb == None, the class will generate a new combination.
 		"""
 
 		if module == 'tensorflow':
@@ -52,4 +54,4 @@ class Hermite2(Poly):
 		elif module == 'numpy':
 			initial = [lambda x: np.ones_like(x), lambda x: 2*x]
 			recurrence = lambda p1, p2, n, x: 2*(x*p1 - n*p2)
-		Poly.__init__(self, module, degree, x, initial, recurrence, dtype, loglevel)
+		Poly.__init__(self, module, degree, x, initial, recurrence, dtype, loglevel, index_comb)
