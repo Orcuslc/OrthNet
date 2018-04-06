@@ -1,6 +1,10 @@
 import tensorflow as tf
 import torch
+import numpy as np
 from ._enum_dim import enum_dim as enum_dim
+from .timeit import timeit
+import time
+import pickle
 
 
 class Poly1d:
@@ -10,7 +14,7 @@ class Poly1d:
 	def __init__(self, module, degree, x, initial, recurrence, dtype = 'float32'):
 		"""
 		- input:
-			- module: 'tensorflow' or 'pytorch' (case insensitive)
+			- module: 'tensorflow', 'pytorch' or 'numpy' (case insensitive)
 			- degree: degree of polynomial
 			- x: a tensor of shape (n*1), where `n` is the number of sample points
 			- initial: initial value, a list of two functions
@@ -20,13 +24,15 @@ class Poly1d:
 			- dtype: 'float32' or 'float64'
 		"""
 		self.module = module.lower()
-		assert self.module in ['tensorflow', 'pytorch'], "Module should be either 'tensorflow' or 'pytorch'."
+		assert self.module in ['tensorflow', 'pytorch', 'numpy'], "Module should be one of ['tensorflow', 'pytorch', 'numpy']."
 		assert degree >= 0 and isinstance(degree, int), "Degree should be a non-negative integer."
 		assert len(initial) == 2, "Need two initial functions."
 		if self.module == 'tensorflow':
 			assert isinstance(x, tf.Variable) or isinstance(x, tf.Tensor), "x should be an isinstance of tensorflow.Variable or tensorflow.Tensor."
-		else:
+		elif self.module == 'pytorch':
 			assert isinstance(x, torch.autograd.Variable) or isinstance(x, torch.Tensor) or isinstance(x, torch.DoubleTensor), "x should be an isinstance of torch.autograd.Variable or torch.Tensor."
+		else:
+			assert isinstance(x, np.ndarray) or isinstance(x, np.matrix), "x should be an isinstance of numpy.array or numpy.matrix"
 		assert dtype in ['float32', 'float64'], "dtype should be either 'float32' or 'float64'"
 		self.degree = degree
 		self.x = x
@@ -56,8 +62,10 @@ class Poly1d:
 		"""
 		if self.module == 'tensorflow':
 			return tf.transpose(tf.concat(self.list, axis = 1))
-		else:
+		elif self.module == 'pytorch':
 			return torch.transpose(torch.cat(self.list, dim = 1))
+		else:
+			return np.transpose(np.concatenate(self.list, axis = 1))
 
 	def update(self, newdegree):
 		"""
@@ -70,9 +78,12 @@ class Poly1d:
 		if self.module == 'tensorflow':
 			weight = tf.reshape(tf.constant(weight), shape = [1, -1])
 			return tf.matmul(weight, tf.multiply(func(self.x), self.tensor))
-		else:
+		elif self.module == 'pytorch':
 			weight = torch.tensor(weight, shape = [1, -1])
 			return torch.matmul(weight, func(self.x)*self.tensor)
+		else:
+			weight = weight.reshape((1, -1))
+			return np.dot(weight, func(self.x)*self.tensor)
 
 
 
@@ -80,10 +91,10 @@ class Poly:
 	"""
 	n-dimensional orthogonal polynomials by three-term recursion and tensor product
 	"""
-	def __init__(self, module, degree, x, initial, recurrence, dtype = 'float32'):
+	def __init__(self, module, degree, x, initial, recurrence, dtype = 'float32', loglevel = 0):
 		"""
 		- input:
-			- module: 'tensorflow' or 'pytorch' (case insensitive)
+			- module: 'tensorflow', 'pytorch' or 'numpy' (case insensitive)
 			- degree: degree of polynomial
 			- x: a tensor of shape (num_sample*num_parameter)
 			- initial: initial value, a list of two functions
@@ -93,23 +104,28 @@ class Poly:
 			- dtype: 'float32' or 'float64'
 		"""
 		self.module = module.lower()
-		assert self.module in ['tensorflow', 'pytorch'], "Module should be either 'tensorflow' or 'pytorch'."
+		assert self.module in ['tensorflow', 'pytorch', 'numpy'], "Module should be one of ['tensorflow', 'pytorch', 'numpy']."
 		assert degree >= 0 and isinstance(degree, int), "Degree should be a non-negative integer."
 		assert len(initial) == 2, "Need two initial functions."
 		if self.module == 'tensorflow':
 			assert isinstance(x, tf.Variable) or isinstance(x, tf.Tensor), "x should be an isinstance of tensorflow.Variable or tensorflow.Tensor."
-		else:
+		elif self.module == 'pytorch':
 			assert isinstance(x, torch.autograd.Variable) or isinstance(x, torch.Tensor) or isinstance(x, torch.DoubleTensor), "x should be an isinstance of torch.autograd.Variable or torch.Tensor."
+		else:
+			assert isinstance(x, np.ndarray) or isinstance(x, np.matrix), "x should be an isinstance of numpy.array or numpy.matrix"
 		assert dtype in ['float32', 'float64'], "dtype should be either 'float32' or 'float64'"
 		self.degree = degree
 		self.x = x
 		self.initial = initial
 		self.recurrence = recurrence
 		self.dtype = dtype
+		self.loglevel = loglevel
 		if self.module == 'tensorflow':
 			self.dim = self.x.get_shape()[1].value
-		else:
+		elif self.module == 'pytorch':
 			self.dim = x.size()[1]
+		else:
+			self.dim = x.shape[1]
 		self._init()
 		self._list = []	
 
@@ -118,38 +134,60 @@ class Poly:
 		self._poly1d = [Poly1d(self.module, self.degree, self.x[:, i], self.initial, self.recurrence, self.dtype) for i in range(self.dim)]
 
 	def _comb(self):
-		comb = enum_dim(self.degree, self.dim)
-		self._index = comb[0]
-		self._combination = comb[1:]
+		@timeit(self.loglevel)
+		def __comb(self):
+			comb_file_name = "comb_"+str(self.degree)+"_"+str(self.dim)
+			try:
+				comb = pickle.load(open(comb_file_name, "rb"))
+			except FileNotFoundError:
+				comb = enum_dim(self.degree, self.dim)
+				pickle.dump(comb, open(comb_file_name, "wb"))
+			except EOFError:
+				comb = enum_dim(self.degree, self.dim)
+				pickle.dump(comb, open(comb_file_name, "wb"))
+			self._index = comb[0]
+			self._combination = comb[1:]
+		__comb(self)
 
 	def _compute(self, start, end):
 		"""
 		compute polynomials from degree `start`(included) and `end`(included).
 		"""
-		if end == self.degree:
-			comb = self._combination[self._index[start]:]
-		else:
-			comb = self._combination[self._index[start]:self._index[end]+1]
-		res = []
-		for c in comb:
-			if self.module == 'tensorflow':
-				if self.dtype == 'float32':
-					poly = tf.constant(1, dtype = tf.float32)
-				else:
-					poly = tf.constant(1, dtype = tf.float64)
-				for i in range(len(c)):	
-					poly = tf.multiply(poly, self._poly1d[i].list[c[i]])
-				poly = tf.reshape(poly, [-1, 1])
+		@timeit(self.loglevel)
+		def __compute(self, start, end):
+			if end == self.degree:
+				comb = self._combination[self._index[start]:]
 			else:
-				if self.dtype == 'float32':
-					poly = torch.ones([self.x.size()[0]])
+				comb = self._combination[self._index[start]:self._index[end]+1]
+			res = []
+			for c in comb:
+				if self.module == 'tensorflow':
+					if self.dtype == 'float32':
+						poly = tf.constant(1, dtype = tf.float32)
+					else:
+						poly = tf.constant(1, dtype = tf.float64)
+					for i in range(len(c)):	
+						poly = tf.multiply(poly, self._poly1d[i].list[c[i]])
+					poly = tf.reshape(poly, [-1, 1])
+				elif self.module == 'pytorch':
+					if self.dtype == 'float32':
+						poly = torch.ones([self.x.size()[0]])
+					else:
+						poly = torch.ones([self.x.size()[0]]).double()
+					for i in range(len(c)):
+						poly = poly*self._poly1d[i].list[c[i]]
+					poly.unsqueeze_(1)
 				else:
-					poly = torch.ones([self.x.size()[0]]).double()
-				for i in range(len(c)):
-					poly = poly*self._poly1d[i].list[c[i]]
-				poly.unsqueeze_(1)
-			res.append(poly)
-		return res
+					if self.dtype == 'float32':
+						poly = np.ones([self.x.shape[0]], dtype = np.float32)
+					else:
+						poly = np.ones([self.x.shape[0]], dtype = np.float64)
+					for i in range(len(c)):
+						poly = poly*self._poly1d[i].list[c[i]]
+					poly = np.expand_dims(poly, axis = 1)
+				res.append(poly)
+			return res
+		return __compute(self, start, end)
 
 	@property
 	def length(self):
@@ -174,8 +212,10 @@ class Poly:
 		"""
 		if self.module == 'tensorflow':
 			return tf.concat(self.list, axis = 1)
-		else:
+		elif self.module == 'pytorch':
 			return torch.cat(self.list, dim = 1)
+		else:
+			return np.concatenate(self.list, axis = 1)
 
 	def update(self, newdegree):
 		"""
@@ -240,14 +280,20 @@ class Poly:
 		if self.module == 'tensorflow':
 			coeff = tf.reshape(tf.constant(coeff), shape = [-1, 1])
 			return tf.matmul(self.tensor, coeff)
-		else:
+		elif self.module == 'pytorch':
 			coeff = torch.Tensor(coeff, shape = [-1, 1])
 			return torch.matmul(self.tensor, coeff)
+		else:
+			coeff = coeff.reshape((-1, 1))
+			return np.dot(self.tensor, coeff)
 
 	def quadrature(self, func, weight):
 		if self.module == 'tensorflow':
 			weight = tf.reshape(tf.constant(weight), shape = [1, -1])
 			return tf.matmul(weight, tf.multiply(func(self.x), self.tensor))
-		else:
+		elif self.module == 'pytorch':
 			weight = torch.Tensor(weight).view(1, -1)
 			return torch.matmul(weight, func(self.x)*self.tensor)
+		else:
+			weight = weight.reshape((1, -1))
+			return np.dot(weight, func(self.x)*self.tensor)
