@@ -1,7 +1,7 @@
 import tensorflow as tf
 import torch
 import numpy as np
-from ..utils import Poly1d, Poly
+from .poly import Poly
 
 class Chebyshev(Poly):
 	"""

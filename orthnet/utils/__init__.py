@@ -1,3 +1,5 @@
-from .poly import Poly, Poly1d
+from .timeit import timeit
+from ._enum_dim import enum_dim
 
-__all__ = ["Poly", "Poly1d"]
+
+__all__ = [enum_dim, timeit]

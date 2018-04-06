@@ -1,7 +1,7 @@
 import tensorflow as tf
 import torch
-from ..utils import Poly1d, Poly
 import numpy as np
+from .poly import Poly
 
 class Legendre(Poly):
 	"""

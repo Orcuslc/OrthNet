@@ -1,9 +1,7 @@
 import tensorflow as tf
 import torch
 import numpy as np
-from ._enum_dim import enum_dim as enum_dim
-from .timeit import timeit
-import time
+from ..utils import enum_dim, timeit
 import pickle
 
 
@@ -131,7 +129,7 @@ class Poly:
 			self._comb()
 		else:
 			self._index = index_comb[0]
-			self._combination = index_comb[1]
+			self._combination = index_comb[1:]
 		self._poly1d = [Poly1d(self.module, self.degree, self.x[:, i], self.initial, self.recurrence, self.dtype) for i in range(self.dim)]
 		self._list = []	
 
