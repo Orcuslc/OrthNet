@@ -24,3 +24,6 @@ class TensorflowBackend(Backend):
 				tf.Variable
 			])) != [], "tensorflow backend requires input to be an isinstance of `tensorflow.Tensor` or `tensorflow.Variable`"
 		return True
+
+	def concatenate(self, tensor, axis):
+		return tf.concat(tensor, axis = axis)

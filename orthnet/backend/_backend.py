@@ -18,3 +18,7 @@ class Backend(object):
 		return False
 
 	is_available = is_compatible = __false
+
+	def concatenate(self, tensor, axis):
+		pass
+

@@ -24,3 +24,6 @@ class NumpyBackend(Backend):
 				np.matrix
 			])) != [], "numpy backend requires input to be an instance of `np.ndarray` or `np.matrix`"
 		return True
+
+	def concatenate(self, tensor, axis):
+		return np.concatenate(tensor, axis = axis)
