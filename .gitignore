@@ -8,3 +8,4 @@ build/
 orthnet/utils/_enum_dim.*
 orthnet/utils/enum_dim/enum_dim.py
 orthnet/utils/enum_dim/enum_dim_wrap.cpp
+old_demo/
