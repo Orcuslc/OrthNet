@@ -1,5 +1,3 @@
-import sys
-sys.path.append('../')
 from orthnet import Legendre
 import tensorflow as tf
 import torch
