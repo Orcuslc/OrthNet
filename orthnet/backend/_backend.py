@@ -1,6 +1,6 @@
 from functools import wraps
 
-def assert_backend_availale(f):
+def assert_backend_available(f):
 	@wraps(f)
 	def check(backend, *args, **kw):
 		if not backend.is_available:
@@ -20,5 +20,22 @@ class Backend(object):
 	is_available = is_compatible = __false
 
 	def concatenate(self, tensor, axis):
-		pass
+		return None
 
+	def ones_like(self, tensor):
+		return None
+
+	def multiply(self, x, y):
+		return None
+
+	def expand_dims(self, tensor, axis):
+		return None
+
+	def get_dims(self, tensor):
+		return None
+
+	def reshape(self, tensor, shape):
+		return None
+
+	def matmul(self, tensor1, tensor2):
+		return None

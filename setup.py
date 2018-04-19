@@ -20,5 +20,5 @@ setup(
 	author = 'Chuan Lu',
 	author_email = 'chuan-lu@uiowa.edu',
 	ext_modules = [ext],
-	packages = ['orthnet', 'orthnet.poly', 'orthnet.utils'],
+	packages = ['orthnet', 'orthnet.poly', 'orthnet.utils', 'orthnet.backend'],
 	)

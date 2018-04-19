@@ -36,20 +36,54 @@ python3 setup.py build_ext --inplace && python3 setup.py install
 - orthnet.Jacobi(Poly)
 
 ## Base class:
-Class `Poly(module, degree, x, dtype = 'float32', loglevel = 0)`:
-
+Class `Poly(x, degree, combination = None)`:
 - Inputs:
-    + module: one of {'tensorflow', 'pytorch', 'numpy'}
-    + degree: the highest degree of target polynomial
-    + x: input tensor of type {tf.placaholder, tf.Variable, torch.Variable, torch.Tensor, numpy.ndarray, numpy.matrix}
-    + dtype: 'float32' or 'float64'
-    + loglevel: 1 to print time cost and 0 to mute
+    + `x`: a tensor
+    + `degree`: highest degree for target polynomials
+    + `combination`: optional, (if the combinations of some degree and dim is computed by `orthnet.enum_dim(degree, dim)`, then one may pass the combinations to save computing time).
+- Attributes:
+    + `Poly.tensor` the tensor of function values
+    + `Poly.length` the number of function basis (columns) in `Poly.tensor`
+    + `Poly.index` the index of the first combination of each degree in `Poly.combinations`
+    + `Poly.combinations` all combinations of tensor product
+    + `Poly.tensor_by_degree(degree)` all polynomials of some degrees
+    + `Poly.eval(coefficients)` eval the function values with given coefficients
+    + `Poly.quadrature` perform Gauss quadrature with given function and weight
 
-- `Poly.tensor`: return a tensor of function values
-- `Poly.combination`: return the combination of dimensions, in lexicographical order
-- `Poly.index`: return the index of the first combination of each degree in `self.combination`
-- `Poly.update(degree)`: update the degree of polynomial
-- `Poly.get_combination(start, end):`: return the combination of degrees from `start`(included) till `end`(included)
-- `Poly.get_poly(start, end)`: return the polynomials of degrees from `start`(included) till `end`(included)
-- `Poly.eval(coefficients)`: evaluate the value of polynomial with coefficients
-- `Poly.quadrature(func, weight)`: evaluate Gauss quadrature with target function and weights
+## Examples:
+
+### with TensorFlow
+```python
+import tensorflow as tf
+import numpy as np
+from orthnet import Legendre
+
+x_data = np.random.random((10, 2))
+x = tf.placeholder(dtype = tf.float32, shape = [None, 2])
+L = Legendre(x, 5)
+
+with tf.Session() as sess:
+    print(L.tensor, feed_dict = {x: x_data})
+```
+
+### with PyTorch
+```python
+import torch
+import numpy as np
+from orthnet import Legendre
+
+x = torch.DoubleTensor(np.random.random((10, 2)))
+L = Legendre(x, 5)
+print(L.tensor)
+```
+
+### with Numpy
+```python
+import numpy as np
+from orthnet import Legendre
+
+x = np.random.random((10, 2))
+L = Legendre(x, 2)
+print(L.tensor)
+```
+
