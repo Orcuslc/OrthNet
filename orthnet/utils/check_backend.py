@@ -1,7 +1,7 @@
 from ..backend import NumpyBackend, TensorflowBackend, TorchBackend
 
 def check_backend(x):
-	all_backends = list(filter(lambda backend: backend.is_available(), [TensorflowBackend(), TorchBackend(), NumpyBackend()]))
+	_all_backends = list(filter(lambda backend: backend.is_available(), [TensorflowBackend(), TorchBackend(), NumpyBackend()]))
 	for backend in _all_backends:
 		if backend.is_compatible(x):
 			return backend
