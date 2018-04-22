@@ -50,7 +50,23 @@ import numpy as np
 from orthnet import Legendre
 
 x = np.random.random((10, 2))
-L = Legendre(x, 2)
+L = Legendre(x, 5)
+print(L.tensor)
+```
+
+### Specify Backend 
+In some scenarios, users can specify the exact backend compatible with the input `x`. The backends provided are:
+- [`orthnet.TensorflowBackend()`](./orthnet/backend/_tensorflow.py)
+- [`orthnet.TorchBackend()`](./orthnet/backend/_torch.py)
+- [`orthnet.NumpyBackend()`](./orthnet/backend/_numpy.py)
+
+An example to specify the backend is as follows.
+```python
+import numpy as np
+from orthnet import Legendre, NumpyBackend
+
+x = np.random.random((10, 2))
+L = Legendre(x, 5, backend = NumpyBackend())
 print(L.tensor)
 ```
 
