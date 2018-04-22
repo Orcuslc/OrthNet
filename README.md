@@ -70,6 +70,18 @@ L = Legendre(x, 5, backend = NumpyBackend())
 print(L.tensor)
 ```
 
+### Specify tensor product combinations
+In some scenarios, users may provide pre-computed tensor product combinations to save computing time. An example of providing combinations is as follows.
+```python
+import numpy as np
+from orthnet import Legendre, enum_dim
+
+dim = 2
+degree = 5
+x = np.random.random((10, dim))
+L = Legendre(x, degree, combinations = enum_dim(degree, dim))
+print(L.tensor)
+```
 
 ## Polynomials:  
 | Class | Polynomial |  
@@ -89,7 +101,7 @@ Class [`Poly(x, degree, combination = None)`](./orthnet/poly/polynomial.py):
 - Inputs:
     + `x` a tensor
     + `degree` highest degree for target polynomials
-    + `combination` optional, (if the combinations of some degree and dim is computed by `orthnet.enum_dim(degree, dim)`, then one may pass the combinations to save computing time).
+    + `combination` optional, tensor product combinations
 - Attributes:
     + `Poly.tensor` the tensor of function values (with degree from 0 to `Poly.degree`(included))
     + `Poly.length` the number of function basis (columns) in `Poly.tensor`
