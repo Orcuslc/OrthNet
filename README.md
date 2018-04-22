@@ -58,18 +58,18 @@ print(L.tensor)
 ## Polynomials:  
 | Class | Polynomial |  
 |-------|-----------|
-| `orthnet.Legendre` | [Legendre polynomial](https://en.wikipedia.org/wiki/Legendre_polynomials) |  
-| `orthnet.Legendre_Normalized(Poly)` | [Normalized Legendre polynomial](https://en.wikipedia.org/w/index.php?title=Legendre_polynomials&section=6#Additional_properties_of_Legendre_polynomials)  |  
-| `orthnet.Laguerre(Poly)` | [Laguerre polynomial](https://en.wikipedia.org/wiki/Laguerre_polynomials)  |  
-| `orthnet.Hermite(Poly)` | [Hermite polynomial of the first kind (in probability theory)](https://en.wikipedia.org/wiki/Hermite_polynomials)  |  
-| `orthnet.Hermite2(Poly)` | [Hermite polynomial of the second kind (in physics)](https://en.wikipedia.org/wiki/Hermite_polynomials)  |  
-| `orthnet.Chebyshev(Poly)` | [Chebyshev polynomial of the first kind](https://en.wikipedia.org/wiki/Chebyshev_polynomials)  |  
-| `orthnet.Chebyshev2(Poly)` | [Chebyshev polynomial of the second kind](https://en.wikipedia.org/wiki/Chebyshev_polynomials)  |  
-| `orthnet.Jacobi(Poly, alpha, beta)` | [Jacobi polynomial](https://en.wikipedia.org/wiki/Jacobi_polynomials) | 
+| [`orthnet.Legendre(Poly)`](./orthnet/poly/_legendre.py) | [Legendre polynomial](https://en.wikipedia.org/wiki/Legendre_polynomials) |  
+| [`orthnet.Legendre_Normalized(Poly)`](./orthnet/poly/_legendre.py) | [Normalized Legendre polynomial](https://en.wikipedia.org/w/index.php?title=Legendre_polynomials&section=6#Additional_properties_of_Legendre_polynomials)  |  
+| [`orthnet.Laguerre(Poly)`](./orthnet/poly/_laguerre.py) | [Laguerre polynomial](https://en.wikipedia.org/wiki/Laguerre_polynomials)  |  
+| [`orthnet.Hermite(Poly)`](./orthnet/poly/_hermite.py) | [Hermite polynomial of the first kind (in probability theory)](https://en.wikipedia.org/wiki/Hermite_polynomials)  |  
+| [`orthnet.Hermite2(Poly)`](./orthnet/poly/_hermite.py) | [Hermite polynomial of the second kind (in physics)](https://en.wikipedia.org/wiki/Hermite_polynomials)  |  
+| [`orthnet.Chebyshev(Poly)`](./orthnet/poly/_chebyshev.py) | [Chebyshev polynomial of the first kind](https://en.wikipedia.org/wiki/Chebyshev_polynomials)  |  
+| [`orthnet.Chebyshev2(Poly)`](./orthnet/poly/_chebyshev.py) | [Chebyshev polynomial of the second kind](https://en.wikipedia.org/wiki/Chebyshev_polynomials)  |  
+| [`orthnet.Jacobi(Poly, alpha, beta)`](./orthnet/poly/_jacobi.py) | [Jacobi polynomial](https://en.wikipedia.org/wiki/Jacobi_polynomials) | 
 
 
 ## Base class:
-Class `Poly(x, degree, combination = None)`:
+Class [`Poly(x, degree, combination = None)`](./orthnet/poly/polynomial.py):
 - Inputs:
     + `x` a tensor
     + `degree` highest degree for target polynomials
