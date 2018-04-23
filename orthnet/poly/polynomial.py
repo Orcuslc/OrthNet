@@ -106,11 +106,11 @@ class Poly(object):
 	def eval(self, coefficients):
 		shape = self._backend.get_dims(coefficients)
 		if len(shape) == 1:
-			coefficients = self._backend.reshape((shape[0], 1))
+			coefficients = self._backend.reshape((1, -1))
 		return self._backend.matmul(self.tensor, coefficients)
 
 	def quadrature(self, function, weight):
 		shape = self._backend.get_dims(weight)
 		if len(shape) == 1:
-			weight = self._backend.reshape((shape[0], 1))
+			weight = self._backend.reshape(weight, (1, -1))
 		return self._backend.matmul(weight, self._backend.multiply(function(self._x), self.tensor))
